@@ -1,9 +1,12 @@
+import json
+from datetime import datetime, date
+from pathlib import Path
+from os.path import join
+from os import getcwd
+
 from airflow.models import BaseOperator, DAG, TaskInstance
 from airflow.utils.decorators import apply_defaults
 from hooks.twitter_hook import TwitterHook
-import json
-from datetime import datetime
-from pathlib import Path
 
 class TwitterOperator(BaseOperator):
 
@@ -54,7 +57,13 @@ if __name__ =="__main__":
     with DAG(dag_id="TwitterTest", start_date=datetime.now()) as dag:
         twitter_operator = TwitterOperator(
             query="AluraOnline",
-            file_path="AluraOnline_{{ ds_nodash }}.json",
+            file_path=join(
+                getcwd(),
+                "datalake",
+                "twitter_aluraonline",
+                f"extract_date={date.today()}",
+                f"AluraOnline_{ date.today().strftime('%Y%m%d') }.json"
+            ),
             task_id="test_run"
         )
 
